@@ -1,11 +1,17 @@
 package org.example;
 
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
 
 @Path("/book")
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -14,17 +20,22 @@ import java.util.Set;
 public class BookRestService implements BookService {
 
     private static Map<String,Book> books = new HashMap<String,Book>();
+
+    @PersistenceContext(unitName = "Chapter15")
+    private EntityManager em;
+
+    @Context
+    private UriInfo uriInfo;
     @Override
     @POST
     @Path("/add")
     public Response addBook(Book b) {
         Response response = new Response();
-        if(books.get(b.getId()) != null){
-            response.setStatus(false);
-            response.setMessage("org.example.Person Already Exists");
-            return response;
+        if(b==null){
+            throw new BadRequestException();
         }
-        books.put(b.getId(), b);
+        em.persist(b);
+        //URI bookUri=uriInfo.getAbsolutePathBuilder().path(b.getId()).build();
         response.setStatus(true);
         response.setMessage("org.example.Person created successfully");
         return response;
