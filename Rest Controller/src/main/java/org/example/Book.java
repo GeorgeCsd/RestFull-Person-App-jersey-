@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 //@Table(name = "bookstbl")
-@XmlRootElement(name="book")
+@XmlRootElement//(name="book")
 @NamedQuery(name=Book.FIND_ALL,query = "SELECT b FROM Book b")
 public class Book {
     public static final String FIND_ALL="Book.findAll";
@@ -14,13 +14,13 @@ public class Book {
     @GeneratedValue
     private String id;
 
-    @Column(nullable=false)
+    @Column(name="TITLE")
     private String title;
 
     @Column(name = "PRICE")
     private Float price;
 
-    @Column(length = 2000)
+    @Column(name="DESCRIPTION")
     private String description;
 
     @Column(name = "ISBN")
@@ -29,6 +29,7 @@ public class Book {
     private Integer nbOfPage;
     @Column(name = "ILLUSTRATIONS")
     private Boolean illustrations;
+    public Book(){}
     public Book(String id) {
         this.id = id;
     }
@@ -76,7 +77,7 @@ public class Book {
         this.illustrations = illustrations;
     }
 
-    public Book(){}
+
     public String getId() {
         return id;
     }
@@ -131,6 +132,10 @@ public class Book {
 
     public void setIllustrations(Boolean illustrations) {
         this.illustrations = illustrations;
+    }
+
+    public String toString(){
+        return "\n"+"Book has "+ " id:"+this.id+" description: "+this.description+" price:"+this.price+" illustrations:"+this.illustrations+" nbOfpage:"+this.nbOfPage+" isbn:"+this.isbn+"\n";
     }
 
 }

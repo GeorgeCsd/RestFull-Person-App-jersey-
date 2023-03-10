@@ -20,6 +20,7 @@ public class BasePath extends Application {
         Set<Class<?>> c=new HashSet<>();
         try{
             c.add(BookRestService.class);
+
         }
         catch(Exception e){
             e.printStackTrace();
