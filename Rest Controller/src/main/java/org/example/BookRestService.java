@@ -6,9 +6,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 
 @Path("/book")
@@ -17,7 +14,7 @@ import java.util.Set;
 //@Stateless
 public class BookRestService implements BookService{
 
-    private static Map<String,Book> books = new HashMap<String,Book>();
+    //private static Map<String,Book> books = new HashMap<String,Book>();
 
     @PersistenceContext(unitName = "RestController")
     private EntityManager em;
@@ -49,12 +46,20 @@ public class BookRestService implements BookService{
     }
 
 
-    @GET
+    @DELETE
     @Path("/{id}/delete")
     public Response deleteBook(@PathParam("id") String id) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("RestController");
         EntityManager em = emf.createEntityManager();
         Book book=em.find(Book.class,id);
+        System.out.println(book);
+        if(book==null){
+           // throw new NotFoundException();
+        }
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+        em.remove(book);
+        tx.commit();
         Response response = new Response();;
         response.setStatus(true);
         response.setMessage("Book deleted successfully\n");
@@ -75,14 +80,11 @@ public class BookRestService implements BookService{
 
     @GET
     @Path("/getAll")
-    public Book[] getAllBooks() {
-        Set<String> ids = books.keySet();
-        Book[] b = new Book[ids.size()];
-        int i=0;
-        for(String id : ids){
-            b[i] = books.get(id);
-            i++;
-        }
-        return b;
+    public Books getAllBooks() {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("RestController");
+        EntityManager em = emf.createEntityManager();
+        TypedQuery<Book> query = em.createNamedQuery(Book.FIND_ALL, Book.class);
+        Books books = new Books(query.getResultList());
+        return books;
     }
 }

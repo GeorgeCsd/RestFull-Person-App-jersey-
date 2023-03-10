@@ -7,7 +7,7 @@ public interface BookService {
 
     public Book getBook(String id);
 
-    public Book[] getAllBooks();
+    public Books getAllBooks();
 
 
 }
