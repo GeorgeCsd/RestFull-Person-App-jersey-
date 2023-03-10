@@ -1,59 +1,78 @@
 package org.example;
 
-import javax.ejb.Stateless;
+import javax.persistence.*;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+
 @Path("/book")
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-@Stateless
-public class BookRestService implements BookService {
+//@Stateless
+public class BookRestService implements BookService{
 
     private static Map<String,Book> books = new HashMap<String,Book>();
+
+    @PersistenceContext(unitName = "RestController")
+    private EntityManager em;
+
+    @Context
+    private UriInfo uriInfo;
     @Override
     @POST
     @Path("/add")
     public Response addBook(Book b) {
-        Response response = new Response();
-        if(books.get(b.getId()) != null){
-            response.setStatus(false);
-            response.setMessage("org.example.Person Already Exists");
-            return response;
-        }
-        books.put(b.getId(), b);
+
+        System.out.println(b);
+        //if(b==null){
+        //    throw new BadRequestException();
+        //}
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("RestController");
+        EntityManager em = emf.createEntityManager();
+        // 3-Persists the book to the database
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+        em.persist(b);
+        tx.commit();
+        URI bookUri=uriInfo.getAbsolutePathBuilder().path(b.getId()).build();
+        //return javax.ws.rs.core.Response.created(bookUri).build();
+        Response response=new Response();
         response.setStatus(true);
-        response.setMessage("org.example.Person created successfully");
+        response.setMessage("Book created successfully \n");
         return response;
     }
 
-    @Override
+
     @GET
     @Path("/{id}/delete")
-    public Response deleteBook(String id) {
-        Response response = new Response();
-        if(books.get(id) == null){
-            response.setStatus(false);
-            response.setMessage("org.example.Person Doesn't Exists");
-            return response;
-        }
-        books.remove(id);
+    public Response deleteBook(@PathParam("id") String id) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("RestController");
+        EntityManager em = emf.createEntityManager();
+        Book book=em.find(Book.class,id);
+        Response response = new Response();;
         response.setStatus(true);
-        response.setMessage("org.example.Person deleted successfully");
+        response.setMessage("Book deleted successfully\n");
         return response;
     }
 
-    @Override
+
     @GET
     @Path("/{id}/get")
-    public Book getBook(String id) {
-        return books.get(id);
+    public Book getBook(@PathParam("id") String id) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("RestController");
+        EntityManager em = emf.createEntityManager();
+        Book book=em.find(Book.class,id);
+
+        return book;
     }
 
-    @Override
+
     @GET
     @Path("/getAll")
     public Book[] getAllBooks() {
