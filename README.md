@@ -23,5 +23,5 @@ mvn clean install -DskipTests
 
 
 # Generate War and add it on Tomcat9/webapps
-war:war org.codehaus.mojo:wagon-maven-plugin:upload-single -Dwagon.fromFile=C:\yourFilePosition\RestApp-1.0-SNAPSHOT.war -Dwagon.url=file://C:\yourTomcatPosition\apache-tomcat-9.0.71\webapps\
+war:war org.codehaus.mojo:wagon-maven-plugin:upload-single -Dwagon.fromFile=C:\yourFilePosition\RestController-1.0-SNAPSHOT.war -Dwagon.url=file://C:\yourTomcatPosition\apache-tomcat-9.0.71\webapps\
 
