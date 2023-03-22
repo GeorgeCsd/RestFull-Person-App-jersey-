@@ -13,6 +13,7 @@ A simple Java EE7(JAX-RS)application that:
 
 # Prerequisites
 JDK 8
+
 Maven 3.0.3 or newer
 
 
